@@ -62,7 +62,8 @@ public class SmoothCheckBox extends View implements Checkable {
     private float mScaleVal = 1.0f, mFloorScale = 1.0f;
     private int mWidth, mAnimDuration, mStrokeWidth;
     private int mCheckedColor, mUnCheckedColor, mFloorColor, mFloorUnCheckedColor;
-
+    private boolean mIsTickAnim = true;
+    
     private boolean mChecked;
     private boolean mTickDrawing;
     private OnCheckedChangeListener mListener;
@@ -94,6 +95,7 @@ public class SmoothCheckBox extends View implements Checkable {
         mFloorColor = ta.getColor(R.styleable.SmoothCheckBox_color_unchecked_stroke, COLOR_FLOOR_UNCHECKED);
         mCheckedColor = ta.getColor(R.styleable.SmoothCheckBox_color_checked, COLOR_CHECKED);
         mUnCheckedColor = ta.getColor(R.styleable.SmoothCheckBox_color_unchecked, COLOR_UNCHECKED);
+        mIsTickAnim = ta.getBoolean(R.styleable.SmoothCheckBox_tick_anim,true);
         mStrokeWidth = ta.getDimensionPixelSize(R.styleable.SmoothCheckBox_stroke_width, CompatUtils.dp2px(getContext(), 0));
         ta.recycle();
 
@@ -279,6 +281,21 @@ public class SmoothCheckBox extends View implements Checkable {
 
     private void drawTickPath(Canvas canvas) {
         mTickPath.reset();
+        if (!mIsTickAnim) {
+            //draw tick no anim
+
+            // draw left of the tick
+            mTickPath.moveTo(mTickPoints[0].x, mTickPoints[0].y);
+            mTickPath.lineTo(mTickPoints[1].x, mTickPoints[1].y);
+            canvas.drawPath(mTickPath, mTickPaint);
+
+            // draw right of the tick
+            mTickPath.moveTo(mTickPoints[1].x, mTickPoints[1].y);
+            mTickPath.lineTo(mTickPoints[2].x, mTickPoints[2].y);
+            canvas.drawPath(mTickPath, mTickPaint);
+            return;
+        }
+        
         // draw left of the tick
         if (mDrewDistance < mLeftLineDistance) {
             float step = (mWidth / 20.0f) < 3 ? 3 : (mWidth / 20.0f);
